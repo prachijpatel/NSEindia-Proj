@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}
+Details
+{% endblock title %}
+
+{% block head %}
+<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"-->
+<!--      integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">-->
+
+<style>
+table {
+  font-family: arial, sans-serif;
+  font-size:15px;
+  min-width:500px;
+  max-width:100%;
+  border-collapse: collapse;
+  margin:auto;
+
+}
+.color{
+baclground-color:rgb(59, 49, 125);
+color:white;
+}
+th{  background-color:rgb(59, 49, 125);
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align:center;
+  padding:2px;
+}
+
+tr{
+align-content:center;
+padding:2px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+  padding:2px;
+}
+.space{
+padding:5px;
+}
+th{  padding:5px;
+}
+
+label,select{
+margin-left:10px;
+color:#e76d24;
+}
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+.custome_select input,.custome_select select{
+    height: 40px;
+    background: #fff;
+    border: solid 1px #e3e3e3;
+    -webkit-border-radius: 8px;
+    position: relative;
+    color: #e76d24;
+    width:200px;
+     font-family: "Montserrat";
+}
+
+</style>
+{% endblock head %}
+{% block content %}
+
+<!--onchange="if(this.value!='select'){this.form.submit();}"-->
+<h1>NSE</h1>
+<div style="display:flex;">
+    <form id="selection1" action="{% url 'detail' %}" method="get">
+        <div style="display:flex;">
+            <label for="options">Option</label>
+            <div class="custome_select">
+                <select name="options" id="options">
+                    <option value="select">Select</option>
+                    {% if opt_filter == "NIFTY" %}
+                    <option value="NIFTY" selected>NIFTY</option>
+                    {% else %}
+                    <option value="NIFTY" selected>NIFTY</option>
+                    {% endif %}
+                    {% if opt_filter == "FINNIFTY" %}
+                    <option value="FINNIFTY" selected>FINNIFTY</option>
+                    {% else %}
+                    <option value="FINNIFTY">FINNIFTY</option>
+                    {% endif %}
+                    {% if opt_filter == "BANKNIFTY" %}
+                    <option value="BANKNIFTY" selected>BANKNIFTY</option>
+                    {% else %}
+                    <option value="BANKNIFTY">BANKNIFTY</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="custome_select">
+                <label for="strikePrice">Strike Price</label>
+                <select name="strikePrice" id="strikePrice">
+                    {% if sp_filter == 'select' or exp_filter != 'select' %}
+                    <option value="select" selected>Select</option>
+                    {% else %}
+                    <option value="select">Select</option>
+                    {% endif %}
+                    {% for price in Prices %}
+                    {% if sp_filter|intcomma == price|intcomma %}
+                    <option value={{price}} selected>{{price}}</option>
+                    {% else %}
+                    <option value={{price}}>{{price}}</option>
+                    {% endif %}
+                    {% endfor %}
+
+
+                </select>
+            </div>
+            <h5 style="margin:10px;">OR</h5>
+            <label for="expiry_dt">Expiry Date</label>
+            <div class="custome_select">
+                <select name="expiry_dt" id="expiry_dt">
+                    {% if exp_filter == 'select' or sp_filter != 'select' %}
+                    <option value="select" selected>Select</option>
+                    {% else %}
+                    <option value="select">Select</option>
+                    {% endif %}
+                    {% for key, date in conv_date.items %}
+                    {% if exp_filter == date %}
+                    <option value={{date}} selected>{{key}}</option>
+                    {% else %}
+                    <option value={{date}}>{{key}}</option>
+                    {% endif %}
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <button style="color:white;background-color:black;margin-left:10px;" type="submit">Filter
+            </button>
+        </div>
+
+    </form>
+
+</div>
+<br>
+<br>
+{% if stokes|length == 0%}
+<h3>Reload if no data is dispalyed</h3>
+{% endif %}
+<!--<h1>{{ stokes|length }} Records</h1>-->
+<table class="table">
+
+    <tr class="color">
+        <th colspan="12">CALLS</th>
+        <th colspan="11">PUTS</th>
+    </tr>
+
+    <tr class="color space">
+        <th>Option</th>
+        <th>EXPIRY Date</th>
+        <th>OI</th>
+        <th>CHNG IN OI</th>
+        <th>VOLUME</th>
+        <th>IV</th>
+        <th>LTP</th>
+        <th>CHNG</th>
+        <th>BID QTY</th>
+        <th>BID PRICE</th>
+        <th>ASK PRICE</th>
+        <th>ASK QTY</th>
+        <th>STRIKE PRICE</th>
+        <th>BID QTY</th>
+        <th>BID PRICE</th>
+        <th>ASK PRICE</th>
+        <th>ASK QTY</th>
+        <th>CHNG</th>
+        <th>LTP</th>
+        <th>IV</th>
+        <th>VOLUME</th>
+        <th>CHNG IN OI</th>
+        <th>OI</th>
+    </tr>
+
+
+    {% for stoke in stokes %}
+
+    <tr>
+        <td>{{stoke.Option}}</td>
+
+        <td>{{stoke.expiry_dt}}</td>
+        {% if stoke.c_Oi is None or stoke.c_Oi == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_Oi|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_ChangeInOi is None or stoke.c_ChangeInOi == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_ChangeInOi|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_Volume is None or stoke.c_Volume == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_Volume|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_Iv is None or stoke.c_Iv == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_Iv|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_Ltp is None or stoke.c_Ltp == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_Ltp|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_Chng is None or stoke.c_Chng == 0.0 %}
+        <td>-</td>
+        {% else %}
+
+        {% if stoke.c_Chng < 0 %}
+        <td style="color:red;">{{stoke.c_Chng|floatformat:2|intcomma}}</td>
+
+        {% else %}
+        <td style="color:green;">{{stoke.c_Chng|floatformat:2|intcomma}}</td>
+
+        {% endif %}
+        {% endif %}
+        {% if stoke.c_BidQty is None or stoke.c_BidQty == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_BidQty|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_BidPrice is None or stoke.c_BidPrice == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_BidPrice|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_AskPrice is None or stoke.c_Oi == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_AskPrice|intcomma}}</td>
+        {% endif %}
+        {% if stoke.c_ASkQty is None or stoke.c_ASkQty == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.c_ASkQty|intcomma}}</td>
+        {% endif %}
+        {% if stoke.strikePrice is None or stoke.strikePrice == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{ stoke.strikePrice|intcomma |intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_BidQty is None or stoke.p_BidQty == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_BidQty|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_BidPrice is None or stoke.p_BidPrice == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_BidPrice|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_AskPrice is None or stoke.p_AskPrice == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_AskPrice|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_AskQty is None or stoke.p_AskQty == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_AskQty|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_Chng is None or stoke.p_Chng == 0.0 %}
+        <td>-</td>
+        {% else %}
+        {% if stoke.p_Chng < 0 %}
+        <td style="color:red;">{{stoke.p_Chng|floatformat:2|intcomma}}</td>
+
+        {% else %}
+        <td style="color:green;">{{stoke.p_Chng|floatformat:2|intcomma}}</td>
+
+        {% endif %}
+        {% endif %}
+        {% if stoke.p_Ltp is None or stoke.p_Ltp == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_Ltp|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_Iv is None or stoke.p_Iv == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_Iv|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_Volume is None or stoke.p_Volume == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_Volume|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_ChangeInOi is None or stoke.p_ChangeInOi == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_ChangeInOi|intcomma}}</td>
+        {% endif %}
+        {% if stoke.p_Oi is None or stoke.p_Oi == 0.0 %}
+        <td>-</td>
+        {% else %}
+        <td>{{stoke.p_Oi|intcomma}}</td>
+        {% endif %}
+
+    </tr>
+    {% endfor %}
+
+
+</table>
+<script>
+    function populate(s1,s2){
+    var s1 = document.getElementById(s1);
+    var s2 = document.getElementById(s2);
+
+    s2.innerHTML="";
+    if(s1.value=="2021-06-17"){
+        var optionArray=[];
+    }
+    for(var option in optionArray){
+    var pair = optionArray[option];
+    var newoption = document.createElement("option");
+
+    newoption.value=p
+    }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+{% endblock content %}
+

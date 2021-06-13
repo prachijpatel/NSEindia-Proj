@@ -1,0 +1,8 @@
+
+
+.idea/*
+venv/*
+app/migrations/*
+app/__pycache__/*
+djangoApp/__pycache__/*
+db.sqlite3
