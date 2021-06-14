@@ -5,17 +5,18 @@ from django.db.models import Sum
 import requests
 import json
 
-dates = ['17-Jun-2021', '24-Jun-2021', '01-Jul-2021', '08-Jul-2021', '15-Jul-2021', '22-Jul-2021',
-         '29-Jul-2021', '05-Aug-2021', '12-Aug-2021', '26-Aug-2021', '30-Sep-2021', '30-Dec-2021',
-         '31-Mar-2022', '30-Jun-2022', '29-Dec-2022', '29-Jun-2023', '28-Dec-2023', '27-Jun-2024',
-         '26-Dec-2024', '26-Jun-2025', '24-Dec-2025']
-
+# dates = ['17-Jun-2021', '24-Jun-2021', '01-Jul-2021', '08-Jul-2021', '15-Jul-2021', '22-Jul-2021',
+#          '29-Jul-2021', '05-Aug-2021', '12-Aug-2021', '26-Aug-2021', '30-Sep-2021', '30-Dec-2021',
+#          '31-Mar-2022', '30-Jun-2022', '29-Dec-2022', '29-Jun-2023', '28-Dec-2023', '27-Jun-2024',
+#          '26-Dec-2024', '26-Jun-2025', '24-Dec-2025']
+dates=[]
 conv_date = {}
-for date in dates:
-    conv_date[date] = str(datetime.strptime(date, '%d-%b-%Y').date())
-Prices = [6000, 7500, 7600, 8000, 8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800, 8900, 9000, 9100, 9200, 9300, 9400,
-          9500, 9600, 9700, 9800, 9900, 10000, 10100, 10200, 10300, 10400, 10500, 10600, 10700, 10800, 10900, 11000,
-          11100, 11200, 11300, 11400, 11500, 11600, 11700, 11800, 11900, 12000]
+Prices=[]
+# for date in dates:
+#     conv_date[date] = str(datetime.strptime(date, '%d-%b-%Y').date())
+# Prices = [6000, 7500, 7600, 8000, 8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800, 8900, 9000, 9100, 9200, 9300, 9400,
+#           9500, 9600, 9700, 9800, 9900, 10000, 10100, 10200, 10300, 10400, 10500, 10600, 10700, 10800, 10900, 11000,
+#           11100, 11200, 11300, 11400, 11500, 11600, 11700, 11800, 11900, 12000]
 
 
 def collect(var):
@@ -29,7 +30,9 @@ def collect(var):
         return
 
     for expiry_dt in dajs['records']['expiryDates']:
-
+        if expiry_dt not in dates:
+            dates.append(expiry_dt)
+            conv_date[expiry_dt]=str(datetime.strptime(expiry_dt, '%d-%b-%Y').date())
         for data in dajs['records']['data']:
             stoke = Stoke()
             if 'CE' in data and 'PE' in data and data['expiryDate'] == expiry_dt:
@@ -95,10 +98,11 @@ def collect(var):
                 stoke.p_AskPrice = data['PE']['askQty']
                 stoke.p_AskQty = data['PE']['askPrice']
                 stoke.expiry_dt = datetime.strptime(expiry_dt,
-                                                    '%d-%b-%Y').date()  # print(datetime.strptime(expiry_dt, '%Y-%m-%d'))
-                # print("pe",stoke,data['PE']['strikePrice'])
+                                                    '%d-%b-%Y').date()
 
                 stoke.save()
+            if stoke.strikePrice and stoke.strikePrice not in Prices:
+                Prices.append(stoke.strikePrice)
 
     print("fetched for ", var)
 
@@ -113,7 +117,10 @@ def collect_category():
 def detail(request):
     # if you want to get the data don't comment the below function
     # otherwise comment it.
+
     collect_category()
+    # print(Prices.sort())
+    Prices.sort(key=lambda x:x)
     stokes=Stoke.objects.all()
     opt_filter = None
     exp_filter = None
@@ -140,7 +147,7 @@ def detail(request):
         context_dict['opt_filter'] = opt_filter
     if exp_filter:
         context_dict['exp_filter'] = exp_filter
-    elif sp_filter:
+    if sp_filter:
         context_dict['sp_filter'] = sp_filter
     # return render(request, template_name, context_dict)
     return render(request, 'app/detail.html', context_dict)
