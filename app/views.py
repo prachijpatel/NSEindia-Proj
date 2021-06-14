@@ -113,7 +113,7 @@ def collect_category():
 def detail(request):
     # if you want to get the data don't comment the below function
     # otherwise comment it.
-    # collect_category()
+    collect_category()
     stokes=Stoke.objects.all()
     opt_filter = None
     exp_filter = None
