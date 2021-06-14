@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.shortcuts import render
 from .models import Stoke
+from django.db.models import Sum
 import requests
 import json
 
@@ -112,7 +113,7 @@ def collect_category():
 def detail(request):
     # if you want to get the data don't comment the below function
     # otherwise comment it.
-    collect_category()
+    # collect_category()
     stokes=Stoke.objects.all()
     opt_filter = None
     exp_filter = None
@@ -130,8 +131,11 @@ def detail(request):
         exp_filter = None
         sp_filter = request.GET.get('strikePrice')
         stokes = stokes.filter(strikePrice=sp_filter)
-
-    context_dict = {'stokes': stokes, 'conv_date': conv_date, 'Prices': Prices}
+    c_Oi_sum=stokes.aggregate(Sum('c_Oi'))['c_Oi__sum']
+    c_Volume_sum=stokes.aggregate(Sum('c_Volume'))['c_Volume__sum']
+    p_Oi_sum = stokes.aggregate(Sum('p_Oi'))['p_Oi__sum']
+    p_Volume_sum = stokes.aggregate(Sum('p_Volume'))['p_Volume__sum']
+    context_dict = {'stokes': stokes, 'conv_date': conv_date, 'Prices': Prices,'c_Oi_sum':c_Oi_sum,'c_Volume_sum':c_Volume_sum,'p_Oi_sum':p_Oi_sum,'p_Volume_sum':p_Volume_sum}
     if opt_filter:
         context_dict['opt_filter'] = opt_filter
     if exp_filter:

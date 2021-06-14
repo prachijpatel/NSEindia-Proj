@@ -65,6 +65,10 @@ label {
      font-family: "Montserrat";
 }
 
+
+
+
+
 </style>
 {% endblock head %}
 {% block content %}
@@ -146,7 +150,7 @@ label {
 <br>
 <br>
 {% if stokes|length == 0%}
-<h3>Reload if no data is dispalyed</h3>
+<h3>No data available</h3>
 {% endif %}
 <!--<h1>{{ stokes|length }} Records</h1>-->
 <table class="table">
@@ -310,8 +314,48 @@ label {
 
     </tr>
     {% endfor %}
+    <tr>
+        <td>Tot</td>
+        <td></td>
+        {% if c_Oi_sum is not None%}
+        <td>{{c_Oi_sum}}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
+        <td></td>
+        {% if c_Volume_sum is not None%}
+        <td>{{c_Volume_sum}}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        {% if c_Volume_sum is not None%}
+        <td>{{p_Oi_sum}}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
+        <td></td>
+        {% if c_Volume_sum is not None%}
+        <td>{{p_Volume_sum}}</td>
+        {% else %}
+        <td>-</td>
+        {% endif %}
 
-
+    </tr>
 </table>
 <script>
     function populate(s1,s2){
@@ -329,6 +373,10 @@ label {
     newoption.value=p
     }
     }
+
+
+
+
 
 
 
