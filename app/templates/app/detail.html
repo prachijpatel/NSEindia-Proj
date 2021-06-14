@@ -161,7 +161,7 @@ label {
     </tr>
 
     <tr class="color space">
-        <th>Option</th>
+
         <th>EXPIRY Date</th>
         <th>OI</th>
         <th>CHNG IN OI</th>
@@ -190,7 +190,7 @@ label {
     {% for stoke in stokes %}
 
     <tr>
-        <td>{{stoke.Option}}</td>
+
 
         <td>{{stoke.expiry_dt}}</td>
         {% if stoke.c_Oi is None or stoke.c_Oi == 0.0 %}
@@ -315,8 +315,8 @@ label {
     </tr>
     {% endfor %}
     <tr>
+
         <td>Tot</td>
-        <td></td>
         {% if c_Oi_sum is not None%}
         <td>{{c_Oi_sum}}</td>
         {% else %}
@@ -357,60 +357,6 @@ label {
 
     </tr>
 </table>
-<script>
-    function populate(s1,s2){
-    var s1 = document.getElementById(s1);
-    var s2 = document.getElementById(s2);
-
-    s2.innerHTML="";
-    if(s1.value=="2021-06-17"){
-        var optionArray=[];
-    }
-    for(var option in optionArray){
-    var pair = optionArray[option];
-    var newoption = document.createElement("option");
-
-    newoption.value=p
-    }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</script>
 
 {% endblock content %}
 

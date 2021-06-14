@@ -6,3 +6,4 @@ app/migrations/*
 app/__pycache__/*
 djangoApp/__pycache__/*
 db.sqlite3
+nse.png
