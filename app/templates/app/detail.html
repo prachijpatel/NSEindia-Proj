@@ -5,8 +5,6 @@ Details
 {% endblock title %}
 
 {% block head %}
-<!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"-->
-<!--      integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">-->
 
 <style>
 table {
@@ -15,7 +13,8 @@ table {
   min-width:500px;
   max-width:100%;
   border-collapse: collapse;
-  margin:auto;
+  margin-left:100px;
+  margin-right:100px;
 
 }
 .color{
@@ -69,6 +68,7 @@ label {
 
 
 
+
 </style>
 {% endblock head %}
 {% block content %}
@@ -99,26 +99,7 @@ label {
                     {% endif %}
                 </select>
             </div>
-            <div class="custome_select">
-                <label for="strikePrice">Strike Price</label>
-                <select name="strikePrice" id="strikePrice">
-                    {% if sp_filter == 'select' or exp_filter != 'select' %}
-                    <option value="select" selected>Select</option>
-                    {% else %}
-                    <option value="select">Select</option>
-                    {% endif %}
-                    {% for price in Prices %}
-                    {% if sp_filter|intcomma == price|intcomma %}
-                    <option value={{price}} selected>{{price}}</option>
-                    {% else %}
-                    <option value={{price}}>{{price}}</option>
-                    {% endif %}
-                    {% endfor %}
 
-
-                </select>
-            </div>
-            <h5 style="margin:10px;">OR</h5>
             <label for="expiry_dt">Expiry Date</label>
             <div class="custome_select">
                 <select name="expiry_dt" id="expiry_dt">
@@ -139,6 +120,28 @@ label {
 
             </div>
 
+            <h5 style="margin:10px;">OR</h5>
+
+            <div class="custome_select">
+                <label for="strikePrice">Strike Price</label>
+                <select name="strikePrice" id="strikePrice">
+                    {% if sp_filter == 'select' or exp_filter != 'select' %}
+                    <option value="select" selected>Select</option>
+                    {% else %}
+                    <option value="select">Select</option>
+                    {% endif %}
+                    {% for price in Prices %}
+                    {% if sp_filter|intcomma == price|intcomma %}
+                    <option value={{price}} selected>{{price}}</option>
+                    {% else %}
+                    <option value={{price}}>{{price}}</option>
+                    {% endif %}
+                    {% endfor %}
+
+
+                </select>
+            </div>
+
 
             <button style="color:white;background-color:black;margin-left:10px;" type="submit">Filter
             </button>
@@ -152,7 +155,7 @@ label {
 {% if stokes|length == 0%}
 <h3>No data available</h3>
 {% endif %}
-<!--<h1>{{ stokes|length }} Records</h1>-->
+{% if stokes|length != 0 %}
 <table class="table">
 
     <tr class="color">
@@ -162,7 +165,7 @@ label {
 
     <tr class="color space">
 
-        <th>EXPIRY Date</th>
+        <th>EXPIRY DATE</th>
         <th>OI</th>
         <th>CHNG IN OI</th>
         <th>VOLUME</th>
@@ -188,10 +191,7 @@ label {
 
 
     {% for stoke in stokes %}
-
     <tr>
-
-
         <td>{{stoke.expiry_dt}}</td>
         {% if stoke.c_Oi is None or stoke.c_Oi == 0.0 %}
         <td>-</td>
@@ -221,13 +221,10 @@ label {
         {% if stoke.c_Chng is None or stoke.c_Chng == 0.0 %}
         <td>-</td>
         {% else %}
-
         {% if stoke.c_Chng < 0 %}
         <td style="color:red;">{{stoke.c_Chng|floatformat:2|intcomma}}</td>
-
         {% else %}
         <td style="color:green;">{{stoke.c_Chng|floatformat:2|intcomma}}</td>
-
         {% endif %}
         {% endif %}
         {% if stoke.c_BidQty is None or stoke.c_BidQty == 0.0 %}
@@ -280,10 +277,8 @@ label {
         {% else %}
         {% if stoke.p_Chng < 0 %}
         <td style="color:red;">{{stoke.p_Chng|floatformat:2|intcomma}}</td>
-
         {% else %}
         <td style="color:green;">{{stoke.p_Chng|floatformat:2|intcomma}}</td>
-
         {% endif %}
         {% endif %}
         {% if stoke.p_Ltp is None or stoke.p_Ltp == 0.0 %}
@@ -311,11 +306,9 @@ label {
         {% else %}
         <td>{{stoke.p_Oi|intcomma}}</td>
         {% endif %}
-
     </tr>
     {% endfor %}
     <tr>
-
         <td>Tot</td>
         {% if c_Oi_sum is not None%}
         <td>{{c_Oi_sum}}</td>
@@ -354,9 +347,8 @@ label {
         {% else %}
         <td>-</td>
         {% endif %}
-
     </tr>
 </table>
-
+{% endif %}
 {% endblock content %}
 
